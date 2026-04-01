@@ -1,0 +1,36 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Certificates
+**/certs/*.pfx
+**/certs/*.p12
+**/certs/*.key
+**/certs/*.crt
+
+# .NET build
+**/bin/
+**/obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vsconfig
+
+# IDEs
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local assistant notes
+CLAUDE.md

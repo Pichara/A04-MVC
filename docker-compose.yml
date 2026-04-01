@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  mvc-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mvc-database
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+    ports:
+      - "1433:1433"
+    volumes:
+      - mvc-db-data:/var/opt/mssql
+    networks:
+      - mvc-network
+
+  # ASP.NET Core MVC Application
+  mvc-app:
+    build:
+      context: ./A04-MVC
+      dockerfile: Dockerfile
+    container_name: mvc-application
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    ports:
+      # Reference (ports syntax): https://docs.docker.com/compose/compose-file/
+      - "7777:443"
+    environment:
+      # References (HTTPS + cert env vars in containers):
+      # https://learn.microsoft.com/en-us/aspnet/core/security/docker-https?view=aspnetcore-9.0
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=https://+:443
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERT_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Server=mvc-db;Database=mvc;User=sa;Password=${SA_PASSWORD};TrustServerCertificate=True;MultipleActiveResultSets=true
+    volumes:
+      # Reference (bind mount syntax): https://docs.docker.com/compose/compose-file/
+      - ./A04-MVC/certs:/https:ro
+    networks:
+      - mvc-network
+  
+  # Initialize database if it doesn't exist
+  db-init:
+    image: mcr.microsoft.com/mssql-tools:latest
+    depends_on:
+      - mvc-db
+    entrypoint: ["/bin/bash", "-c"]
+    command: >
+      "ready=0;
+      for i in {1..30}; do
+        /opt/mssql-tools/bin/sqlcmd -b -S mvc-db -U sa -P '${SA_PASSWORD}' -Q \"SELECT 1\" && ready=1 && break;
+        echo \"Waiting for SQL Server...\";
+        sleep 5;
+      done;
+      if [ $$ready -ne 1 ]; then
+        echo \"SQL Server not ready\"; exit 1;
+      fi;
+      if ! /opt/mssql-tools/bin/sqlcmd -b -S mvc-db -U sa -P '${SA_PASSWORD}' -Q \"IF DB_ID('mvc') IS NULL RAISERROR('missing',16,1);\"; then
+        /opt/mssql-tools/bin/sqlcmd -b -S mvc-db -U sa -P '${SA_PASSWORD}' -i /schema/DatabaseSchema.sql || exit 1;
+      fi;
+      /opt/mssql-tools/bin/sqlcmd -b -S mvc-db -U sa -P '${SA_PASSWORD}' -d mvc -Q \"IF OBJECT_ID('dbo.LoginInfo','U') IS NULL RAISERROR('LoginInfo table not ready',16,1); IF EXISTS (SELECT 1 FROM dbo.LoginInfo WHERE Username = 'Rodrigo') UPDATE dbo.LoginInfo SET Password = 'Password' WHERE Username = 'Rodrigo'; ELSE INSERT INTO dbo.LoginInfo (Username, Password) VALUES ('Rodrigo', 'Password'); IF EXISTS (SELECT 1 FROM dbo.LoginInfo WHERE Username = 'Jules') UPDATE dbo.LoginInfo SET Password = 'Password' WHERE Username = 'Jules'; ELSE INSERT INTO dbo.LoginInfo (Username, Password) VALUES ('Jules', 'Password'); IF EXISTS (SELECT 1 FROM dbo.LoginInfo WHERE Username = 'Brandy') UPDATE dbo.LoginInfo SET Password = 'Password' WHERE Username = 'Brandy'; ELSE INSERT INTO dbo.LoginInfo (Username, Password) VALUES ('Brandy', 'Password'); IF EXISTS (SELECT 1 FROM dbo.LoginInfo WHERE Username = 'Negin') UPDATE dbo.LoginInfo SET Password = 'Password' WHERE Username = 'Negin'; ELSE INSERT INTO dbo.LoginInfo (Username, Password) VALUES ('Negin', 'Password');\""
+    networks:
+      - mvc-network
+    restart: "no"
+    volumes:
+      - ./A04-MVC/DatabaseSchema.sql:/schema/DatabaseSchema.sql:ro
+
+volumes:
+  mvc-db-data:
+
+networks:
+  mvc-network:
+    driver: bridge

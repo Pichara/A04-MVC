@@ -1,0 +1,54 @@
+@model A04_MVC.Models.ItemListViewModel
+@{
+    ViewData["Title"] = "My Inventory";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>My Inventory</h1>
+        <div>
+            <a asp-action="Create" class="btn btn-primary me-2">Add Item</a>
+            <form asp-action="Logout" asp-controller="Login" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-secondary">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    @if (Model.Items != null && Model.Items.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Date Purchased</th>
+                    <th>Price</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Items)
+                {
+                    string encodedId = $"{item.UserId}|{item.Item}|{item.CategoryId}";
+                    <tr>
+                        <td>@item.Item</td>
+                        <td>@item.DateBought.ToString("yyyy-MM-dd")</td>
+                        <td>$@item.Price.ToString("F2")</td>
+                        <td>@(item.Category?.CategoryName ?? "N/A")</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@encodedId" class="btn btn-sm btn-primary">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@encodedId" class="btn btn-sm btn-danger">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            No items found. <a asp-action="Create">Add your first item!</a>
+        </div>
+    }
+</div>

@@ -1,0 +1,50 @@
+@model A04_MVC.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container" style="max-width: 500px; margin-top: 50px;">
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-center">Home Inventory Catalog</h2>
+            <p class="text-center text-muted">Please login to access your inventory</p>
+        </div>
+        <div class="card-body">
+            @if (TempData["RegistrationSuccess"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["RegistrationSuccess"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            <form asp-action="Index" method="post">
+                <div asp-validation-summary="All" class="text-danger"></div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Username" class="control-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <button type="submit" class="btn btn-primary w-100">Login</button>
+                </div>
+
+                <div class="text-center">
+                    <p>Don't have an account? <a asp-action="Register">Register here</a></p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
