@@ -3,23 +3,36 @@
     ViewData["Title"] = "Error";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="auth-wrapper">
+    <div style="width:100%;max-width:480px;text-align:center;">
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
+        <div style="width:72px;height:72px;background:#FEF2F2;border-radius:50%;margin:0 auto 1.5rem;display:flex;align-items:center;justify-content:center;">
+            <svg width="36" height="36" fill="none" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10" stroke="#DC2626" stroke-width="1.8" />
+                <path d="M12 8v5M12 16.5h.01" stroke="#DC2626" stroke-width="2" stroke-linecap="round" />
+            </svg>
+        </div>
 
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+        <h1 style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:2rem;color:#07152E;letter-spacing:-.4px;margin:0 0 .5rem;">Something went wrong</h1>
+        <p style="color:#94A3B8;font-size:.95rem;margin:0 0 2rem;">An error occurred while processing your request.</p>
+
+        @if (Model.ShowRequestId)
+        {
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.75rem;text-align:left;">
+                <p style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#94A3B8;margin:0 0 .5rem;">Request ID</p>
+                <code style="font-size:.85rem;color:#1A56DB;background:#EBF2FF;padding:.25rem .6rem;border-radius:6px;word-break:break-all;">@Model.RequestId</code>
+            </div>
+        }
+
+        <div style="background:#EBF2FF;border:1px solid #BFDBFE;border-radius:10px;padding:1.25rem;text-align:left;margin-bottom:2rem;">
+            <p style="font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:.85rem;color:#1E40AF;margin:0 0 .5rem;">Development Mode</p>
+            <p style="font-size:.85rem;color:#1D4ED8;margin:0;">
+                Enable the <strong>Development</strong> environment by setting <code style="background:rgba(255,255,255,.6);padding:.1rem .35rem;border-radius:4px;">ASPNETCORE_ENVIRONMENT</code> to <code style="background:rgba(255,255,255,.6);padding:.1rem .35rem;border-radius:4px;">Development</code> for detailed error information.
+            </p>
+        </div>
+
+        <a asp-controller="Login" asp-action="Index" class="btn btn-primary" style="padding:.75rem 2rem !important;">
+            Return to Login
+        </a>
+    </div>
+</div>

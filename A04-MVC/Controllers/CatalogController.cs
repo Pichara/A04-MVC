@@ -372,6 +372,10 @@ namespace A04_MVC.Controllers
             {
                 result = RedirectToAction("Index", "Login");
             }
+            else if (string.IsNullOrWhiteSpace(id))
+            {
+                result = NotFound();
+            }
             else
             {
                 string[] parts = id.Split('|');
