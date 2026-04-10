@@ -53,7 +53,7 @@ CREATE TABLE dbo.LoginInfo
 (
     UserID BIGINT IDENTITY(1,1) NOT NULL PRIMARY KEY,
     Username VARCHAR(25) UNIQUE,
-    Password VARCHAR(50)
+    Password VARCHAR(256) NOT NULL
 );
 GO
 
@@ -96,13 +96,13 @@ RETURN
 );
 GO
 
--- Insert seed data into LoginInfo
+-- Insert seed data into LoginInfo using PBKDF2 password hashes for the password "Password"
 INSERT INTO dbo.LoginInfo (Username, Password)
 VALUES
-    ('Rodrigo', 'Password'),
-    ('Jules', 'Password'),
-    ('Brandy', 'Password'),
-    ('Negin', 'Password');
+    ('Rodrigo', 'PBKDF2$100000$0RERW7ATGHhaMv4b71xcIA==$QQb+sQMUzZSvpojP5GK+Y+Ffvh8ny7l6v8bg2FkgAlQ='),
+    ('Jules', 'PBKDF2$100000$oNZXvVLFfPhfD3LSQ9aCsg==$f21QPiRfr8VcGB2WDP/21Fljka9zm9WPzp3obgAtNMU='),
+    ('Brandy', 'PBKDF2$100000$ZA3rVZuhEJX/+o9rvsXkCA==$Fml8CuMUr6M86HWxPtGxzPNVLnx8OarV1yIkRQVukoo='),
+    ('Negin', 'PBKDF2$100000$rOXXZ4IUcZ24dqtiRgvpvg==$bIh59w0Lfya69RyvgYUmTNvE0GOHi1KgFpxtXwz4yn4=');
 GO
 
 -- Insert seed data into Category

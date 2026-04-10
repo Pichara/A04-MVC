@@ -4,12 +4,11 @@
 * PROGRAMMER   : Rodrigo Pichara Gomes
 * FIRST VERSION: 2026-04-01
 * DESCRIPTION  : Implementation of authentication service.
-*                Handles user authentication with plain text password comparison.
+*                Handles user authentication using hashed password storage.
 */
 
 using A04_MVC.Data;
 using A04_MVC.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace A04_MVC.Services
 {
@@ -43,12 +42,18 @@ namespace A04_MVC.Services
         {
             LoginInfo? result = null;
 
-            // Find user by username and verify password
+            // Find user by username and verify the supplied password.
             LoginInfo? user = _context.LoginInfos
-                .FirstOrDefault(u => u.Username == username && u.Password == password);
+                .FirstOrDefault(u => u.Username == username);
 
-            if (user != null)
+            if (user != null && PasswordHashService.VerifyPassword(password, user.Password))
             {
+                if (!PasswordHashService.IsPasswordHash(user.Password))
+                {
+                    user.Password = PasswordHashService.HashPassword(password);
+                    _context.SaveChanges();
+                }
+
                 result = user;
             }
 
@@ -92,7 +97,7 @@ namespace A04_MVC.Services
                 LoginInfo newUser = new LoginInfo
                 {
                     Username = username,
-                    Password = password
+                    Password = PasswordHashService.HashPassword(password)
                 };
 
                 // Add to database

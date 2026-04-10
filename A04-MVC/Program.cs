@@ -8,6 +8,7 @@
 */
 
 using A04_MVC.Data;
+using A04_MVC.Models;
 using A04_MVC.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,30 @@ namespace A04_MVC
             builder.Services.AddControllersWithViews();
 
             WebApplication app = builder.Build();
+
+            using (IServiceScope scope = app.Services.CreateScope())
+            {
+                ILogger<Program> logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+                MvcDbContext dbContext = scope.ServiceProvider.GetRequiredService<MvcDbContext>();
+                dbContext.Database.ExecuteSqlRaw(
+                    "IF COL_LENGTH('dbo.LoginInfo', 'Password') IS NOT NULL AND COL_LENGTH('dbo.LoginInfo', 'Password') < 256 ALTER TABLE dbo.LoginInfo ALTER COLUMN Password VARCHAR(256) NOT NULL;");
+                List<LoginInfo> legacyUsers = dbContext.LoginInfos
+                    .ToList();
+                legacyUsers = legacyUsers
+                    .Where(user => !PasswordHashService.IsPasswordHash(user.Password))
+                    .ToList();
+
+                if (legacyUsers.Count > 0)
+                {
+                    foreach (LoginInfo user in legacyUsers)
+                    {
+                        user.Password = PasswordHashService.HashPassword(user.Password);
+                    }
+
+                    dbContext.SaveChanges();
+                    logger.LogInformation("Migrated {Count} legacy plaintext passwords to hashed values", legacyUsers.Count);
+                }
+            }
 
             // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())

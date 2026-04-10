@@ -39,7 +39,7 @@ namespace A04_MVC.Models
         /// Hashed password for authentication
         /// </summary>
         [Required]
-        [StringLength(50)]
+        [StringLength(256)]
         [Column("Password")]
         public string Password { get; set; } = string.Empty;
 
