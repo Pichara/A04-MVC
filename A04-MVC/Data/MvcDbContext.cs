@@ -1,7 +1,7 @@
 /*
 * FILE         : MvcDbContext.cs
 * PROJECT      : A04-MVC
-* PROGRAMMER   : Rodrigo Pichara Gomes
+* PROGRAMMER   : Bramdyy
 * FIRST VERSION: 2026-04-01
 * DESCRIPTION  : Database context for Entity Framework Core
 *                Manages database connection and entity mappings

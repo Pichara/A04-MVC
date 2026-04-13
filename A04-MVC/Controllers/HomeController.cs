@@ -1,3 +1,11 @@
+/*
+* FILE         : HomeController.cs
+* PROJECT      : A04-MVC
+* PROGRAMMER   : Negin Karimi
+* FIRST VERSION: 2026-04-01
+* DESCRIPTION  : Controller for user login and logout operations
+*/
+
 using System.Diagnostics;
 using A04_MVC.Models;
 using Microsoft.AspNetCore.Mvc;

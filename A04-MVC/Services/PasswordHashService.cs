@@ -1,7 +1,7 @@
 /*
 * FILE         : PasswordHashService.cs
 * PROJECT      : A04-MVC
-* PROGRAMMER   : OpenAI Codex
+* PROGRAMMER   : Rodrigo Pichara Gomes
 * FIRST VERSION: 2026-04-09
 * DESCRIPTION  : Password hashing utilities for secure credential storage.
 *                Uses PBKDF2 with SHA-256 and per-password salts.
